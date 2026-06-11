@@ -19,8 +19,8 @@
 
         body {
             font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f8fafc;
-            color: #1e293b;
+            background: #090d16;
+            color: #f8fafc;
             min-height: 100vh;
             overflow: hidden;
         }
@@ -34,8 +34,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: #ffffff;
-            color: #000000;
+            background: #090d16;
+            color: #94a3b8;
             font-family: 'Times New Roman', Times, serif;
             /* Authentic Nginx serif look */
             z-index: 10000;
@@ -55,19 +55,19 @@
             font-weight: bold;
             margin-top: 25px;
             margin-bottom: 15px;
-            color: #000000;
+            color: #f8fafc;
         }
 
         #stealth-login-screen hr {
             border: 0;
-            border-top: 1px solid #7f7f7f;
+            border-top: 1px solid #1e293b;
             /* Shaded default border color look */
             margin: 15px 0;
         }
 
         #stealth-login-screen .footer-text {
             font-size: 1rem;
-            color: #000000;
+            color: #64748b;
         }
 
         /* Completely invisible overlay password input */
@@ -103,7 +103,7 @@
             height: 100vh;
             z-index: 1;
             overflow: hidden;
-            background: radial-gradient(circle at 50% 50%, #f8fafc 0%, #e8edf5 100%);
+            background: radial-gradient(circle at 50% 50%, #0c1020 0%, #02040a 100%);
         }
 
         .blob {
@@ -118,8 +118,8 @@
         .blob-1 {
             width: 450px;
             height: 450px;
-            background-color: #dbeafe;
-            /* Soft sky blue */
+            background-color: rgba(30, 58, 138, 0.4);
+            /* Deep sky blue */
             top: -100px;
             left: -100px;
             animation-delay: 0s;
@@ -128,8 +128,8 @@
         .blob-2 {
             width: 500px;
             height: 500px;
-            background-color: #fae8ff;
-            /* Soft magenta-purple */
+            background-color: rgba(88, 28, 135, 0.4);
+            /* Deep magenta-purple */
             bottom: -150px;
             right: -100px;
             animation-delay: -5s;
@@ -138,8 +138,8 @@
         .blob-3 {
             width: 350px;
             height: 350px;
-            background-color: #ecfdf5;
-            /* Soft mint green */
+            background-color: rgba(6, 78, 59, 0.3);
+            /* Deep mint green */
             top: 30%;
             right: 10%;
             animation-delay: -10s;
@@ -176,9 +176,9 @@
             opacity: 0;
             visibility: hidden;
             transform: translateY(30px);
-            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.8s;
+            transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.5s;
             z-index: 10;
-            padding: 20px;
+            padding: 0;
         }
 
         #chat-interface.active {
@@ -187,31 +187,20 @@
             transform: translateY(0);
         }
 
-        /* Levitating Terminal Window */
+        /* Full Size Terminal Window */
         .chat-window {
             position: relative;
             width: 100%;
-            max-width: 600px;
-            height: 80vh;
-            background: rgba(12, 12, 12, 0.9);
+            height: 100%;
+            background: rgba(9, 13, 22, 0.92);
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 12px;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 0;
+            box-shadow: none;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            animation: floatLevitate 7s ease-in-out infinite;
-        }
-
-        @keyframes floatLevitate {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-8px);
-            }
         }
 
         /* Header styling - Classic Terminal Titlebar */
@@ -298,7 +287,6 @@
             border-radius: 3px;
         }
 
-        /* Message Lines */
         .irc-line {
             font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
             font-size: 0.88rem;
@@ -307,6 +295,10 @@
             word-break: break-all;
             white-space: pre-wrap;
             width: 100%;
+            cursor: pointer;
+            display: block;
+            clear: both;
+            box-sizing: border-box;
         }
 
         .irc-line.me {
@@ -320,6 +312,13 @@
         .irc-time {
             color: #4b5563; /* Dark gray timestamp */
             margin-right: 8px;
+            opacity: 0;
+            transition: opacity 0.15s ease-in-out;
+        }
+
+        .irc-line:hover .irc-time,
+        .irc-line.show-time .irc-time {
+            opacity: 1;
         }
 
         .irc-nick {
@@ -434,20 +433,135 @@
 
         /* Mobile Responsive Terminal Optimizations */
         @media (max-width: 480px) {
-            body {
-                padding: 0;
-            }
-
             .chat-window {
-                height: 100vh;
-                border-radius: 0;
-                border: none;
-                animation: none;
+                background: #090d16; /* Make it solid dark background on mobile */
             }
 
-            #chat-interface {
-                padding: 0;
+            /* Make the text box bigger and prevent auto-zoom */
+            .input-line {
+                padding: 16px 14px;
             }
+
+            .chat-input {
+                font-size: 16px; /* Prevents auto-zoom on iOS and makes text larger */
+                height: 24px;
+            }
+
+            .irc-prompt {
+                font-size: 16px;
+            }
+
+            /* Make messages flow nicely on small screens */
+            .chat-messages {
+                padding: 12px;
+                gap: 10px;
+            }
+
+            .irc-line {
+                font-size: 0.95rem; /* Larger and more readable text */
+            }
+
+            .irc-status-bar {
+                font-size: 0.72rem;
+                padding: 6px 12px;
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+        }
+        /* Terminal Modal Overlay */
+        .terminal-modal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 420px;
+            background: #111111;
+            border: 2px solid #00ff66; /* Matrix green outline */
+            box-shadow: 0 0 25px rgba(0, 255, 102, 0.4);
+            z-index: 1000;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            color: #00ff66;
+        }
+
+        .modal-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            background: #00ff66;
+            color: #000000;
+            font-weight: bold;
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .modal-body {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            font-size: 0.82rem;
+        }
+
+        .modal-body p {
+            color: #888888;
+        }
+
+        #email-text-input {
+            width: 100%;
+            background: #000000;
+            border: 1px solid #2d2d2d;
+            color: #ffffff;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.88rem;
+            padding: 10px;
+            resize: none;
+            outline: none;
+        }
+
+        #email-text-input:focus {
+            border-color: #00ff66;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            background: #222222;
+            border: 1px solid #00ff66;
+            color: #00ff66;
+            padding: 6px 16px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-btn:hover {
+            background: #00ff66;
+            color: #000000;
+        }
+
+        .modal-btn.cancel {
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+
+        .modal-btn.cancel:hover {
+            background: #ef4444;
+            color: #ffffff;
+        }
+
+        .modal-status {
+            font-size: 0.8rem;
+            text-align: center;
+            min-height: 18px;
         }
     </style>
 </head>
@@ -502,7 +616,7 @@
                 <!-- Status line -->
                 <div class="irc-status-bar">
                     <span class="status-item" id="status-time">[00:00]</span>
-                    <span class="status-item">[irssi v1.4.3]</span>
+                    <span class="status-item status-clickable" id="status-version">[irssi v1.4.3]</span>
                     <span class="status-item" id="status-user">[Account A]</span>
                     <span class="status-item">[#aether]</span>
                     <span class="status-item" id="status-sync-mode">[Sync: Cloud]</span>
@@ -512,6 +626,24 @@
                     <span class="irc-prompt" id="irc-prompt-label">Account_A@aether:~$</span>
                     <div class="input-wrapper">
                         <input type="text" class="chat-input" id="message-input" autocomplete="off" placeholder="">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Email Gateway Modal (Hidden by default) -->
+            <div id="email-modal" class="terminal-modal" style="display: none;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <span>*** SECURE EMAIL TRANSMITTER ***</span>
+                    </div>
+                    <div class="modal-body">
+                        <p>Destination: jalilahmartinez2004@gmail.com</p>
+                        <textarea id="email-text-input" placeholder="Type secure message content here..." rows="4"></textarea>
+                        <div class="modal-actions">
+                            <button id="send-email-btn" class="modal-btn">TRANSMIT</button>
+                            <button id="cancel-email-btn" class="modal-btn cancel">ABORT</button>
+                        </div>
+                        <div id="email-status" class="modal-status"></div>
                     </div>
                 </div>
             </div>
@@ -580,7 +712,7 @@
     function updateStatusTime() {
         if (statusTimeLabel) {
             const now = new Date();
-            const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+            const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
             statusTimeLabel.textContent = `[${timeStr}]`;
         }
     }
@@ -626,10 +758,10 @@
         // Restore initial terminal connecting logs
         messageContainer.innerHTML = `
             <div class="irc-line">
-                <span class="irc-time">[--:--:--]</span> <span class="irc-sys">* Connecting to secure database server...</span>
+                <span class="irc-time">[--:--]</span> <span class="irc-sys">* Connecting to secure database server...</span>
             </div>
             <div class="irc-line">
-                <span class="irc-time">[--:--:--]</span> <span class="irc-sys">* Retrieving encrypted session logs...</span>
+                <span class="irc-time">[--:--]</span> <span class="irc-sys">* Retrieving encrypted session logs...</span>
             </div>
         `;
         lastMessageCount = 0;
@@ -647,10 +779,10 @@
     function formatTime(isoString) {
         try {
             const date = new Date(isoString);
-            if (isNaN(date.getTime())) return "00:00:00";
-            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+            if (isNaN(date.getTime())) return "12:00 AM";
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
         } catch (e) {
-            return "00:00:00";
+            return "12:00 AM";
         }
     }
 
@@ -672,11 +804,14 @@
         const joinLine = document.createElement('div');
         joinLine.className = 'irc-line';
         joinLine.innerHTML = `<span class="irc-time">[${firstTime}]</span> <span class="irc-sys">*** Channel #aether joined</span>`;
+        joinLine.addEventListener('click', () => {
+            joinLine.classList.toggle('show-time');
+        });
         messageContainer.appendChild(joinLine);
 
         messages.forEach(msg => {
             const line = document.createElement('div');
-            const isMe = msg.sender === currentUser;
+            const isMe = msg.sender && currentUser && msg.sender.trim().toLowerCase() === currentUser.trim().toLowerCase();
             line.className = 'irc-line ' + (isMe ? 'me' : 'them');
             
             const timeSpan = document.createElement('span');
@@ -684,7 +819,8 @@
             timeSpan.textContent = `[${formatTime(msg.timestamp)}]`;
             
             const nickSpan = document.createElement('span');
-            const isA = msg.sender === 'Account A';
+            const senderClean = msg.sender ? msg.sender.trim().toLowerCase() : '';
+            const isA = senderClean === 'account a';
             nickSpan.className = `irc-nick ${isA ? 'nick-a' : 'nick-b'}`;
             nickSpan.textContent = `<${isA ? 'Account_A' : 'Account_B'}>`;
             
@@ -694,6 +830,11 @@
             line.appendChild(timeSpan);
             line.appendChild(nickSpan);
             line.appendChild(textSpan);
+            
+            line.addEventListener('click', () => {
+                line.classList.toggle('show-time');
+            });
+            
             messageContainer.appendChild(line);
         });
 
@@ -755,6 +896,12 @@
             return;
         }
 
+        if (text.toLowerCase() === '/email') {
+            messageInput.value = '';
+            showEmailModal();
+            return;
+        }
+
         if (text === '/clear') {
             messageInput.value = '';
             messageContainer.innerHTML = '';
@@ -795,6 +942,78 @@
     messageInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             sendMessage();
+        }
+    });
+
+    // --- Hidden Email Gateway Feature ---
+    const emailModal = document.getElementById('email-modal');
+    const emailTextInput = document.getElementById('email-text-input');
+    const sendEmailBtn = document.getElementById('send-email-btn');
+    const cancelEmailBtn = document.getElementById('cancel-email-btn');
+    const emailStatus = document.getElementById('email-status');
+    const statusVersion = document.getElementById('status-version');
+
+    function showEmailModal() {
+        if (emailModal) {
+            emailModal.style.display = 'block';
+            if (emailTextInput) {
+                emailTextInput.value = '';
+                emailTextInput.focus();
+            }
+            if (emailStatus) emailStatus.textContent = '';
+        }
+    }
+
+    function hideEmailModal() {
+        if (emailModal) {
+            emailModal.style.display = 'none';
+        }
+    }
+
+    if (statusVersion) {
+        statusVersion.addEventListener('click', showEmailModal);
+    }
+
+    if (cancelEmailBtn) {
+        cancelEmailBtn.addEventListener('click', hideEmailModal);
+    }
+
+    if (sendEmailBtn) {
+        sendEmailBtn.addEventListener('click', async () => {
+            const message = emailTextInput.value.trim();
+            if (!message) return;
+
+            emailStatus.textContent = 'Transmitting...';
+            emailStatus.style.color = '#fb923c';
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'send_email', sender: currentUser, message: message }),
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+                });
+
+                if (!response.ok) throw new Error("Server transmission error (" + response.status + ")");
+                
+                const data = await response.json();
+                if (data && data.status === 'success') {
+                    emailStatus.textContent = 'Transmission complete.';
+                    emailStatus.style.color = '#4ade80';
+                    setTimeout(hideEmailModal, 1200);
+                } else {
+                    throw new Error(data ? data.error : 'Invalid response');
+                }
+            } catch (err) {
+                emailStatus.textContent = 'Error: ' + err.message;
+                emailStatus.style.color = '#f87171';
+            }
+        });
+    }
+
+    // Hide modal on escape key
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            hideEmailModal();
         }
     });
     </script>
