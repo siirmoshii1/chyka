@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 Not Found</title>
+    <!-- Outfit Google Font for a modern, weightless design -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Reset & Core Styling */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* =========================================================================
+       STEALTH LOGIN (Nginx 404 Disguise)
+       ========================================================================= */
+        #stealth-login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            color: #000000;
+            font-family: 'Times New Roman', Times, serif;
+            /* Authentic Nginx serif look */
+            z-index: 10000;
+            padding: 30px 20px;
+            box-sizing: border-box;
+            user-select: none;
+            cursor: default;
+        }
+
+        #stealth-login-screen center {
+            display: block;
+            text-align: center;
+        }
+
+        #stealth-login-screen h1 {
+            font-size: 2em;
+            font-weight: bold;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            color: #000000;
+        }
+
+        #stealth-login-screen hr {
+            border: 0;
+            border-top: 1px solid #7f7f7f;
+            /* Shaded default border color look */
+            margin: 15px 0;
+        }
+
+        #stealth-login-screen .footer-text {
+            font-size: 1rem;
+            color: #000000;
+        }
+
+        /* Completely invisible overlay password input */
+        #secret-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: default;
+            border: none;
+            outline: none;
+            z-index: 10001;
+        }
+
+        /* Fade-out animation for smooth transition */
+        #stealth-login-screen.fade-out {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* =========================================================================
+       ANTIGRAVITY CHAT UI STYLE
+       ========================================================================= */
+        /* Ambient Levitation Blobs */
+        .bg-blobs {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+            overflow: hidden;
+            background: radial-gradient(circle at 50% 50%, #f8fafc 0%, #e8edf5 100%);
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.5;
+            mix-blend-mode: multiply;
+            animation: floatAround 25s infinite alternate ease-in-out;
+        }
+
+        .blob-1 {
+            width: 450px;
+            height: 450px;
+            background-color: #dbeafe;
+            /* Soft sky blue */
+            top: -100px;
+            left: -100px;
+            animation-delay: 0s;
+        }
+
+        .blob-2 {
+            width: 500px;
+            height: 500px;
+            background-color: #fae8ff;
+            /* Soft magenta-purple */
+            bottom: -150px;
+            right: -100px;
+            animation-delay: -5s;
+        }
+
+        .blob-3 {
+            width: 350px;
+            height: 350px;
+            background-color: #ecfdf5;
+            /* Soft mint green */
+            top: 30%;
+            right: 10%;
+            animation-delay: -10s;
+        }
+
+        @keyframes floatAround {
+            0% {
+                transform: translate(0, 0) scale(1) rotate(0deg);
+            }
+
+            33% {
+                transform: translate(80px, 60px) scale(1.15) rotate(120deg);
+            }
+
+            66% {
+                transform: translate(-50px, 100px) scale(0.9) rotate(240deg);
+            }
+
+            100% {
+                transform: translate(0, 0) scale(1) rotate(360deg);
+            }
+        }
+
+        /* Main Container (Invisible until active) */
+        #chat-interface {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(30px);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.8s;
+            z-index: 10;
+            padding: 20px;
+        }
+
+        #chat-interface.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        /* Levitating Terminal Window */
+        .chat-window {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            height: 80vh;
+            background: rgba(12, 12, 12, 0.9);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: floatLevitate 7s ease-in-out infinite;
+        }
+
+        @keyframes floatLevitate {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        /* Header styling - Classic Terminal Titlebar */
+        .chat-header {
+            padding: 10px 16px;
+            background: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #2d2d2d;
+            user-select: none;
+        }
+
+        .terminal-title {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.85rem;
+            color: #888888;
+            font-weight: normal;
+        }
+
+        .terminal-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .term-btn {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.85rem;
+            color: #64748b;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            outline: none;
+            transition: color 0.2s;
+            user-select: none;
+        }
+
+        .term-btn:hover {
+            color: #ffffff;
+        }
+
+        .term-btn.close:hover {
+            color: #ef4444;
+        }
+
+        /* Connection Warning Log */
+        .demo-banner {
+            background: rgba(245, 158, 11, 0.08);
+            border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+            padding: 8px 16px;
+            font-size: 0.8rem;
+            color: #fb923c;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Scrollable Chat Area - Irssi Terminal Logs */
+        .chat-messages {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            background: rgba(5, 5, 5, 0.35);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            scrollbar-width: thin;
+            scrollbar-color: #2d2d2d transparent;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #2d2d2d;
+            border-radius: 3px;
+        }
+
+        /* Message Lines */
+        .irc-line {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.88rem;
+            line-height: 1.5;
+            color: #d1d5db; /* Light gray text */
+            word-break: break-all;
+            white-space: pre-wrap;
+            width: 100%;
+        }
+
+        .irc-line.me {
+            text-align: right;
+        }
+
+        .irc-line.them {
+            text-align: left;
+        }
+
+        .irc-time {
+            color: #4b5563; /* Dark gray timestamp */
+            margin-right: 8px;
+        }
+
+        .irc-nick {
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        /* Stable Colors for Accounts */
+        .irc-nick.nick-a {
+            color: #60a5fa; /* Soft blue for Account A */
+        }
+
+        .irc-nick.nick-b {
+            color: #f472b6; /* Soft pink for Account B */
+        }
+
+        .irc-sys {
+            color: #10b981; /* Green join/status messages */
+        }
+
+        .irc-err {
+            color: #f87171; /* Red error messages */
+        }
+
+        /* Empty state */
+        .empty-state {
+            margin: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            color: #4b5563;
+            max-width: 400px;
+            text-align: left;
+            line-height: 1.6;
+        }
+
+        .empty-state h3 {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            font-size: 0.82rem;
+        }
+
+        /* Footer / Input panel */
+        .chat-footer {
+            background: #111111;
+            border-top: 1px solid #2d2d2d;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-line {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #0d0d0d;
+        }
+
+        .irc-prompt {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.88rem;
+            color: #10b981; /* Green prompt */
+            font-weight: bold;
+            white-space: nowrap;
+            user-select: none;
+        }
+
+        .input-wrapper {
+            flex: 1;
+        }
+
+        .chat-input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            color: #00ff66; /* Matrix green input text */
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.88rem;
+            outline: none;
+        }
+
+        /* Status Bar (Classic Irssi theme) */
+        .irc-status-bar {
+            background: #008080; /* Teal status bar */
+            color: #ffffff;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.78rem;
+            padding: 4px 16px;
+            display: flex;
+            gap: 16px;
+            user-select: none;
+        }
+
+        .status-item {
+            display: inline-block;
+        }
+
+        .status-clickable {
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 0 4px;
+            border-radius: 2px;
+            transition: background 0.2s;
+        }
+
+        .status-clickable:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Mobile Responsive Terminal Optimizations */
+        @media (max-width: 480px) {
+            body {
+                padding: 0;
+            }
+
+            .chat-window {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+                animation: none;
+            }
+
+            #chat-interface {
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =========================================================================
+       STEALTH LOGIN WINDOW
+       ========================================================================= -->
+    <div id="stealth-login-screen">
+        <center>
+            <h1>404 Not Found</h1>
+        </center>
+        <hr>
+        <center>
+            <div class="footer-text">nginx</div>
+        </center>
+
+        <!-- Hidden input covering the entire page -->
+        <input type="password" id="secret-input" autocomplete="off" autofocus>
+    </div>
+
+    <!-- Ambient weightless backgrounds -->
+    <div class="bg-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- =========================================================================
+       CHAT MAIN INTERFACE
+       ========================================================================= -->
+    <div id="chat-interface">
+        <div class="chat-window">
+
+            <!-- Terminal Header -->
+            <div class="chat-header">
+                <div class="terminal-title" id="terminal-header-title">irssi - Account_A@aether: #aether</div>
+                <div class="terminal-controls">
+                    <button class="term-btn" id="lock-btn" title="Lock Console">_</button>
+                    <button class="term-btn close" id="term-close-btn" title="Exit Chat">X</button>
+                </div>
+            </div>
+
+            <!-- Messages Logs -->
+            <div class="chat-messages" id="chat-messages-container">
+                <!-- IRC text lines populated by JS -->
+            </div>
+
+            <!-- Terminal Footer & Status Bar -->
+            <div class="chat-footer">
+                <!-- Status line -->
+                <div class="irc-status-bar">
+                    <span class="status-item" id="status-time">[00:00]</span>
+                    <span class="status-item">[irssi v1.4.3]</span>
+                    <span class="status-item" id="status-user">[Account A]</span>
+                    <span class="status-item">[#aether]</span>
+                    <span class="status-item" id="status-sync-mode">[Sync: Cloud]</span>
+                </div>
+                <!-- Input prompt line -->
+                <div class="input-line">
+                    <span class="irc-prompt" id="irc-prompt-label">Account_A@aether:~$</span>
+                    <div class="input-wrapper">
+                        <input type="text" class="chat-input" id="message-input" autocomplete="off" placeholder="">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- =========================================================================
+       FRONTEND APP LOGIC
+       ========================================================================= -->
+    <script>
+    // --- DATABASE CONFIGURATION ---
+    const API_URL = 'https://script.google.com/macros/s/AKfycbz0PHpvfMk1npAn9Y_1R24rNoMcyoTZs6fR7OSpsEeYV3cZOYgKl43LVKpVHA7pzNvT/exec';
+
+    // Account Credential Mapping
+    const credentials = {
+        'pass1': 'Account A',
+        'pass2': 'Account B'
+    };
+
+    let currentUser = '';
+    let pollingInterval = null;
+    let lastMessageCount = 0;
+    let isOffline = false;
+    let loadedMessages = [];
+
+    // --- DOM Elements ---
+    const stealthScreen = document.getElementById('stealth-login-screen');
+    const secretInput = document.getElementById('secret-input');
+    const chatInterface = document.getElementById('chat-interface');
+    const messageContainer = document.getElementById('chat-messages-container');
+    const messageInput = document.getElementById('message-input');
+    const lockButton = document.getElementById('lock-btn');
+    const closeButton = document.getElementById('term-close-btn');
+    const statusTimeLabel = document.getElementById('status-time');
+    const statusUserLabel = document.getElementById('status-user');
+    const statusSyncMode = document.getElementById('status-sync-mode');
+    const ircPromptLabel = document.getElementById('irc-prompt-label');
+    const termHeaderTitle = document.getElementById('terminal-header-title');
+
+    // --- Stealth Login Management ---
+    function focusSecretInput() {
+        if (stealthScreen.style.display !== 'none') {
+            secretInput.focus();
+        }
+    }
+    
+    window.addEventListener('load', () => {
+        secretInput.focus();
+    });
+    
+    document.addEventListener('click', focusSecretInput);
+
+    secretInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            const password = secretInput.value.trim();
+            if (credentials[password]) {
+                currentUser = credentials[password];
+                loginSuccess();
+            } else {
+                secretInput.value = '';
+            }
+        }
+    });
+
+    function updateStatusTime() {
+        if (statusTimeLabel) {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+            statusTimeLabel.textContent = `[${timeStr}]`;
+        }
+    }
+
+    function loginSuccess() {
+        // Update prompt labels, user details and header title
+        const userPrompt = currentUser === 'Account A' ? 'Account_A' : 'Account_B';
+        if (ircPromptLabel) ircPromptLabel.textContent = `${userPrompt}@aether:~$`;
+        if (termHeaderTitle) termHeaderTitle.textContent = `irssi - ${userPrompt}@aether: #aether`;
+        if (statusUserLabel) statusUserLabel.textContent = `[${currentUser}]`;
+
+        document.title = "•"; 
+        
+        stealthScreen.classList.add('fade-out');
+        setTimeout(() => {
+            stealthScreen.style.display = 'none';
+            chatInterface.classList.add('active');
+            messageInput.focus();
+        }, 500);
+
+        // Update time dynamically in irssi status bar
+        updateStatusTime();
+        setInterval(updateStatusTime, 30000);
+
+        syncData();
+        pollingInterval = setInterval(syncData, 3000);
+    }
+
+    function lockConsole() {
+        if (pollingInterval) {
+            clearInterval(pollingInterval);
+        }
+        
+        currentUser = '';
+        secretInput.value = '';
+        document.title = '404 Not Found';
+        
+        chatInterface.classList.remove('active');
+        stealthScreen.style.display = 'flex';
+        stealthScreen.offsetHeight;
+        stealthScreen.classList.remove('fade-out');
+        
+        // Restore initial terminal connecting logs
+        messageContainer.innerHTML = `
+            <div class="irc-line">
+                <span class="irc-time">[--:--:--]</span> <span class="irc-sys">* Connecting to secure database server...</span>
+            </div>
+            <div class="irc-line">
+                <span class="irc-time">[--:--:--]</span> <span class="irc-sys">* Retrieving encrypted session logs...</span>
+            </div>
+        `;
+        lastMessageCount = 0;
+        loadedMessages = [];
+        
+        setTimeout(() => {
+            secretInput.focus();
+        }, 50);
+    }
+
+    if (lockButton) lockButton.addEventListener('click', lockConsole);
+    if (closeButton) closeButton.addEventListener('click', lockConsole);
+
+    // --- Message Processing & Formatting ---
+    function formatTime(isoString) {
+        try {
+            const date = new Date(isoString);
+            if (isNaN(date.getTime())) return "00:00:00";
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+        } catch (e) {
+            return "00:00:00";
+        }
+    }
+
+    function renderMessages(messages) {
+        if (messages.length === 0) {
+            messageContainer.innerHTML = `
+                <div class="empty-state">
+                    <h3>*** Channel #aether joined</h3>
+                    <p>Type messages to begin logging. System Commands: /lock, /exit, /clear.</p>
+                </div>
+            `;
+            return;
+        }
+
+        messageContainer.innerHTML = '';
+        
+        // Render classic IRC Join Message as line 1
+        const firstTime = formatTime(messages[0].timestamp);
+        const joinLine = document.createElement('div');
+        joinLine.className = 'irc-line';
+        joinLine.innerHTML = `<span class="irc-time">[${firstTime}]</span> <span class="irc-sys">*** Channel #aether joined</span>`;
+        messageContainer.appendChild(joinLine);
+
+        messages.forEach(msg => {
+            const line = document.createElement('div');
+            const isMe = msg.sender === currentUser;
+            line.className = 'irc-line ' + (isMe ? 'me' : 'them');
+            
+            const timeSpan = document.createElement('span');
+            timeSpan.className = 'irc-time';
+            timeSpan.textContent = `[${formatTime(msg.timestamp)}]`;
+            
+            const nickSpan = document.createElement('span');
+            const isA = msg.sender === 'Account A';
+            nickSpan.className = `irc-nick ${isA ? 'nick-a' : 'nick-b'}`;
+            nickSpan.textContent = `<${isA ? 'Account_A' : 'Account_B'}>`;
+            
+            const textSpan = document.createElement('span');
+            textSpan.textContent = msg.message;
+            
+            line.appendChild(timeSpan);
+            line.appendChild(nickSpan);
+            line.appendChild(textSpan);
+            messageContainer.appendChild(line);
+        });
+
+        // Autoscroll to bottom
+        requestAnimationFrame(() => {
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+        });
+    }
+
+    // --- Fetch Operations (Sync API) ---
+    async function syncData() {
+        try {
+            const response = await fetch(API_URL);
+            if (!response.ok) throw new Error("Server error (HTTP " + response.status + ")");
+            
+            const data = await response.json();
+            
+            if (Array.isArray(data)) {
+                loadedMessages = data;
+                if (data.length !== lastMessageCount) {
+                    renderMessages(data);
+                    lastMessageCount = data.length;
+                }
+                updateSyncStatus(true);
+            } else if (data && data.status === "error") {
+                throw new Error(data.error);
+            } else {
+                throw new Error("Invalid response format");
+            }
+        } catch (err) {
+            console.warn("Cloud connection sync failed: ", err);
+            updateSyncStatus(false, err.message);
+        }
+    }
+
+    function updateSyncStatus(connected, errorMsg) {
+        if (!statusSyncMode) return;
+        
+        if (connected) {
+            statusSyncMode.textContent = "[Sync: Active]";
+            statusSyncMode.style.color = "#4ade80"; // Bright Green
+            isOffline = false;
+        } else {
+            const displayError = errorMsg ? `Error: ${errorMsg}` : "Reconnecting...";
+            statusSyncMode.textContent = `[Sync: ${displayError}]`;
+            statusSyncMode.style.color = "#f87171"; // Red
+            isOffline = true;
+        }
+    }
+
+    async function sendMessage() {
+        const text = messageInput.value.trim();
+        if (!text) return;
+
+        // Escape / console commands
+        if (text === '/lock' || text === '/exit') {
+            messageInput.value = '';
+            lockConsole();
+            return;
+        }
+
+        if (text === '/clear') {
+            messageInput.value = '';
+            messageContainer.innerHTML = '';
+            lastMessageCount = 0;
+            loadedMessages = [];
+            return;
+        }
+
+        const timestamp = new Date().toISOString();
+
+        // Cloud Mode - Optimistic rendering
+        const tempMsg = { sender: currentUser, message: text, timestamp: timestamp };
+        const currentList = [...loadedMessages, tempMsg];
+        renderMessages(currentList);
+        messageInput.value = '';
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify({ sender: currentUser, message: text }),
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+            });
+            if (!response.ok) throw new Error("Transmit failed (HTTP " + response.status + ")");
+            
+            const data = await response.json();
+            if (data && data.status === "error") {
+                throw new Error(data.error);
+            }
+            
+            syncData();
+        } catch (err) {
+            console.warn("Cloud send sync pending: ", err);
+            updateSyncStatus(false, err.message);
+        }
+    }
+
+    // --- Input Action Listeners ---
+    messageInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+    </script>
+</body>
+
+</html>
