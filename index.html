@@ -1,6 +1,7 @@
     <!DOCTYPE html>
     <html lang="en">
     <head>
+    <link rel="manifest" href="manifest.json">
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Chutt</title>
@@ -36,7 +37,7 @@
                 font-family: var(--font-body);
                 background-color: var(--bg-dark);
                 color: var(--text-main);
-                min-height: 100vh;
+                min-height: calc(var(--vh, 1vh) * 100);
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -49,7 +50,7 @@
                 top: 0;
                 left: 0;
                 width: 100vw;
-                height: 100vh;
+                height: calc(var(--vh, 1vh) * 100);
                 z-index: 1;
                 overflow: hidden;
                 pointer-events: none;
@@ -115,6 +116,9 @@
                 flex-direction: column;
                 gap: 24px;
                 transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+                /* Install button styling */
+                position: relative;
+
             }
 
             .auth-logo {
@@ -236,7 +240,7 @@
                 top: 0;
                 left: 0;
                 width: 100vw;
-                height: 100vh;
+                height: calc(var(--vh, 1vh) * 100);
                 z-index: 10;
                 background: var(--panel-bg);
                 backdrop-filter: blur(25px);
@@ -1231,7 +1235,7 @@
                         <div class="avatar">G</div>
                         <div class="conv-details">
                             <div class="conv-name-row">
-                                <div class="conv-name">Global Group Chat</div>
+                                <div class="conv-name">Group Chat Tayo</div>
                                 <div class="conv-time" id="global-last-time"></div>
                             </div>
                             <div class="conv-message-snippet" id="global-last-msg">No messages yet.</div>
@@ -2443,5 +2447,61 @@
                 }
             }
         </script>
+    <script>
+      // Viewport height fix for mobile browsers
+      function setVh() {
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+      }
+      setVh();
+      window.addEventListener('resize', setVh);
+
+      // Register service worker for PWA
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('service-worker.js')
+          .catch(err => console.error('Service worker registration failed:', err));
+      }
+
+      // PWA Install Prompt handling
+      let deferredPrompt;
+      const installBtn = document.createElement('button');
+      installBtn.id = 'install-btn';
+      installBtn.textContent = 'Install App';
+      installBtn.style.position = 'fixed';
+      installBtn.style.bottom = '20px';
+      installBtn.style.right = '20px';
+      installBtn.style.padding = '12px 20px';
+      installBtn.style.background = 'var(--primary-grad)';
+      installBtn.style.color = '#fff';
+      installBtn.style.border = 'none';
+      installBtn.style.borderRadius = '8px';
+      installBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
+      installBtn.style.cursor = 'pointer';
+      installBtn.style.zIndex = '1000';
+      installBtn.style.display = 'none';
+      document.body.appendChild(installBtn);
+
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installBtn.style.display = 'block';
+      });
+
+      installBtn.addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log('User response to the install prompt:', outcome);
+        if (outcome === 'accepted') {
+          installBtn.style.display = 'none';
+        }
+        deferredPrompt = null;
+      });
+
+      window.addEventListener('appinstalled', () => {
+        console.log('PWA was installed');
+        installBtn.style.display = 'none';
+      });
+    </script>
     </body>
     </html>
