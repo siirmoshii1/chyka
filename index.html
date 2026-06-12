@@ -118,6 +118,8 @@
                 transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
                 /* Install button styling */
                 position: relative;
+                /* Input bar will be positioned at the bottom */
+                /* No extra changes needed here */
 
             }
 
@@ -1308,9 +1310,9 @@
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
                         </button>
                         
-                        <input type="text" id="messenger-input" placeholder="Type a message..." autocomplete="off">
+                        <input type="text" id="messenger-input" placeholder="Type a message..." autocomplete="off" style="flex:1; margin-right:8px; padding:12px; border-radius:24px; border:none; background:rgba(255,255,255,0.1); color:var(--text-main); font-size:1rem; outline:none;"/>
                         
-                        <button class="input-action-btn send-btn" onclick="handleSendMessage()" title="Send message">
+                        <button class="input-action-btn send-btn" onclick="handleSendMessage()" title="Send message" style="background:var(--primary-grad); border:none; border-radius:50%; width:44px; height:44px; display:flex; align-items:center; justify-content:center; color:#fff;">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                         </button>
                     </div>
@@ -2457,9 +2459,36 @@
       window.addEventListener('resize', setVh);
 
       // Register service worker for PWA
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('service-worker.js')
-          .catch(err => console.error('Service worker registration failed:', err));
+      if (location.protocol.startsWith('http')) {
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('./service-worker.js')
+            .catch(err => console.error('Service worker registration failed:', err));
+        }
+      } else {
+        console.warn('Service worker registration skipped (non‑http origin)');
+      }
+
+      // Ensure the chat input stays visible above the on‑screen keyboard
+      // Use VisualViewport API to adjust bottom inset when keyboard appears
+      if (window.visualViewport) {
+        const adjustInputInset = () => {
+          const inputBar = document.querySelector('.chat-input-bar');
+          if (!inputBar) return;
+          const inset = window.visualViewport.height - window.innerHeight;
+          inputBar.style.bottom = `${inset}px`;
+        };
+        window.visualViewport.addEventListener('resize', adjustInputInset);
+        window.visualViewport.addEventListener('scroll', adjustInputInset);
+      }
+
+      // Focus listener to scroll the input into view when tapped
+      const messengerInput = document.getElementById('messenger-input');
+      if (messengerInput) {
+        messengerInput.addEventListener('focus', () => {
+          setTimeout(() => {
+            messengerInput.scrollIntoView({ block: 'center', behavior: 'smooth' });
+          }, 300);
+        });
       }
 
       // PWA Install Prompt handling
